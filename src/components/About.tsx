@@ -8,7 +8,7 @@ const stats = [
 ];
 
 const facts = [
-  { icon: MapPin, text: 'Based in San Francisco, CA' },
+  { icon: MapPin, text: 'Based in Penang, Malaysia' },
   { icon: Coffee, text: '3 cups of coffee per day, minimum' },
   { icon: Zap, text: 'Obsessed with web performance' },
   { icon: Heart, text: 'Dog dad & weekend hiker' },
