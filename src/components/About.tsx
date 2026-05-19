@@ -1,17 +1,17 @@
-import { MapPin, Coffee, Zap, Heart } from 'lucide-react';
+import { MapPin, Trophy, Brain, Globe } from 'lucide-react';
 
 const stats = [
-  { value: '5+', label: 'Years Experience' },
-  { value: '40+', label: 'Projects Shipped' },
-  { value: '15+', label: 'Happy Clients' },
-  { value: '8', label: 'Open Source Repos' },
+  { value: '2+', label: 'Years in AI/ML' },
+  { value: '4+', label: 'Projects Shipped' },
+  { value: '3.50', label: 'CGPA (Honours)' },
+  { value: "Dean's List", label: 'Award 2024/25' },
 ];
 
 const facts = [
   { icon: MapPin, text: 'Based in Penang, Malaysia' },
-  { icon: Coffee, text: '3 cups of coffee per day, minimum' },
-  { icon: Zap, text: 'Obsessed with web performance' },
-  { icon: Heart, text: 'Dog dad & weekend hiker' },
+  { icon: Trophy, text: 'Futsal Champion (SUKAPPS 2025)' },
+  { icon: Brain, text: 'Passionate about AI & intelligent systems' },
+  { icon: Globe, text: 'Speaks 4 languages' },
 ];
 
 export default function About() {
@@ -23,7 +23,7 @@ export default function About() {
           <div className="relative">
             <div className="relative z-10 aspect-[4/5] rounded-2xl overflow-hidden max-w-md">
               <img
-                src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=600"
+                src="/profile.png"
                 alt="Bryon Savero"
                 className="w-full h-full object-cover"
               />
@@ -32,8 +32,8 @@ export default function About() {
 
             {/* Floating card */}
             <div className="absolute -bottom-4 -right-4 lg:right-0 z-20 bg-neutral-900 border border-neutral-800 rounded-xl p-4 shadow-2xl max-w-[180px]">
-              <div className="text-2xl font-bold text-white mb-0.5">5+ Years</div>
-              <div className="text-xs text-neutral-400">Building for the web</div>
+              <div className="text-2xl font-bold text-white mb-0.5">2+ Years</div>
+              <div className="text-xs text-neutral-400">Building AI solutions</div>
             </div>
 
             {/* Decorative elements */}
@@ -49,18 +49,21 @@ export default function About() {
             </h2>
             <div className="space-y-4 text-neutral-400 leading-relaxed mb-8">
               <p>
-                I'm a full-stack developer with a deep passion for building products that are as
-                beautiful as they are functional. My journey started with a fascination for how
-                software shapes human behavior, and it's driven every project since.
+                I'm an AI Solutions Engineer with a strong foundation in machine learning,
+                full-stack development, and intelligent system design. Currently at WCOE (Walta
+                Centre Of Excellence), I deliver production-ready AI systems for education and
+                training use cases.
               </p>
               <p>
-                I specialize in React, TypeScript, and Node.js, with a strong eye for design and
-                user experience. I thrive in collaborative environments and love transforming
-                ambiguous problems into clear, maintainable solutions.
+                I specialize in Large Language Models (LLMs), prompt engineering, and AI-powered
+                knowledge systems — with hands-on experience in computer vision pipelines, RAG
+                workflows, and full-stack web development. I thrive at the intersection of AI and
+                real-world problem solving.
               </p>
               <p>
-                When I'm not writing code, you'll find me contributing to open source, reading
-                about distributed systems, or exploring trails with my dog.
+                When I'm not building AI solutions, I'm leading technical teams at hackathons,
+                competing in futsal tournaments, or exploring the latest research in generative AI
+                and intelligent automation.
               </p>
             </div>
 

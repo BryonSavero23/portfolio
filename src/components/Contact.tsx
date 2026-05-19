@@ -51,9 +51,9 @@ export default function Contact() {
               <h3 className="text-white font-semibold mb-4">Contact Details</h3>
               <div className="space-y-4">
                 {[
-                  { icon: Mail, label: 'Email', value: 'hello@alexmorgan.dev' },
-                  { icon: MessageSquare, label: 'Discord', value: 'alexmorgan#1234' },
-                  { icon: MapPin, label: 'Location', value: 'San Francisco, CA — Open to remote' },
+                  { icon: Mail, label: 'Email', value: 'bryonsavero.work@gmail.com' },
+                  { icon: MessageSquare, label: 'LinkedIn', value: 'linkedin.com/in/bryon-savero-64871328a' },
+                  { icon: MapPin, label: 'Location', value: 'Penang, Malaysia — Open to remote' },
                 ].map(({ icon: Icon, label, value }) => (
                   <div key={label} className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">

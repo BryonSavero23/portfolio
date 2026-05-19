@@ -12,38 +12,30 @@ type Entry = {
 const timeline: Entry[] = [
   {
     type: 'work',
-    title: 'Senior Frontend Engineer',
-    org: 'Stripe',
-    period: '2023 — Present',
+    title: 'AI Solutions Engineer',
+    org: 'WCOE (Walta Centre Of Excellence), Batu Kawan',
+    period: 'Jan 2026 — Present',
     description:
-      "Lead frontend development for Stripe's developer dashboard. Reduced initial load time by 40% through code-splitting and lazy loading strategies. Mentored two junior engineers.",
-    tags: ['React', 'TypeScript', 'GraphQL', 'Figma'],
+      'Designing and developing AI-powered solutions leveraging LLMs for education and training use cases. Building AI knowledge-based systems, applying prompt engineering for structured responses, and integrating document-based knowledge sources to support contextual Q&A workflows. Exploring RAG concepts to enhance response relevance and collaborating with stakeholders to translate requirements into AI-driven solutions.',
+    tags: ['LLMs', 'Prompt Engineering', 'RAG', 'OpenAI API', 'Knowledge Systems'],
   },
   {
     type: 'work',
-    title: 'Full-Stack Engineer',
-    org: 'Linear',
-    period: '2021 — 2023',
+    title: 'AI / ML Engineer Intern',
+    org: 'Sunway Digital Technology Solutions (DTS)',
+    period: 'Mar 2024 — Sep 2024',
     description:
-      'Built core product features end-to-end in a fast-paced startup. Owned the notifications system from design to delivery. Shipped features used by 50k+ developers daily.',
-    tags: ['React', 'Node.js', 'PostgreSQL', 'Electron'],
+      'Developed and deployed a production-ready face recognition system with integrated mask detection at Sunway FSSC Office, Menara Sunway. Built a GradCAM-based periocular analysis pipeline to improve masked face recognition accuracy. Developed a vehicle analytics dashboard with automated alerting using Streamlit, Pandas, and Plotly. Collaborated on FastAPI services and Google Cloud Platform deployment.',
+    tags: ['TensorFlow', 'Keras', 'PyTorch', 'FastAPI', 'GCP', 'Streamlit'],
   },
   {
     type: 'edu',
-    title: 'B.S. Computer Science',
-    org: 'UC Berkeley',
-    period: '2017 — 2021',
+    title: 'Bachelor in Computer Science (Intelligent Computing) with Honours',
+    org: 'University Sains Malaysia (USM)',
+    period: 'Oct 2021 — Jul 2025',
     description:
-      'Graduated with honors. Focused on systems programming and distributed computing. Teaching assistant for Data Structures & Algorithms for two semesters.',
-  },
-  {
-    type: 'work',
-    title: 'Software Engineering Intern',
-    org: 'Figma',
-    period: 'Summer 2020',
-    description:
-      'Worked on the plugins API team. Contributed to performance improvements in the plugin sandbox and shipped a new API endpoint used by the most popular Figma plugins.',
-    tags: ['TypeScript', 'C++', 'WebAssembly'],
+      'Graduated with CGPA 3.50. Dean\'s List Award (Academic Session 2024/2025). Active in Computer Science Society (Committee Member), USM Google Developer Student Club (Core Team Member), and Computer Science Futsal Team. Top 10 Finalist at Varsity Hackathon 2024; Head of Technical Department at Varsity Hackathon 2023.',
+    tags: ['CGPA 3.50', "Dean's List", 'GDSC Core Team', 'Hackathon Finalist'],
   },
 ];
 
@@ -97,7 +89,7 @@ export default function Experience() {
             Experience & Education
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto">
-            The roles and experiences that shaped how I think about software and product.
+            The roles and experiences that shaped how I think about AI, software, and product.
           </p>
         </div>
 

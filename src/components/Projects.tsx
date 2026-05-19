@@ -1,4 +1,4 @@
-import { ExternalLink, Github, Star } from 'lucide-react';
+import { ExternalLink, Github } from 'lucide-react';
 
 type Project = {
   title: string;
@@ -8,69 +8,45 @@ type Project = {
   liveUrl: string;
   repoUrl: string;
   featured: boolean;
-  stars?: number;
 };
 
 const projects: Project[] = [
   {
-    title: 'Nexus — Team Collaboration Platform',
+    title: 'AI Knowledge Bot System',
     description:
-      'A real-time collaboration suite with channels, threads, file sharing, and video calls. Built for distributed teams who need speed and reliability.',
+      'Designed and configured an AI-powered knowledge assistant for educational use cases. Implemented structured system prompts for consistent, accurate responses and integrated document-based knowledge sources to enable contextual Q&A. Tuned LLM responses via prompt engineering and parameter adjustments.',
     image: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['React', 'TypeScript', 'WebSockets', 'PostgreSQL', 'Redis'],
+    tags: ['OpenAI API', 'Prompt Engineering', 'LLM', 'RAG', 'Learningflow.AI'],
     liveUrl: '#',
     repoUrl: '#',
     featured: true,
-    stars: 412,
   },
   {
-    title: 'Verdant — Personal Finance Tracker',
+    title: 'Personalized Rehabilitation Plans',
     description:
-      'A clean, privacy-first finance app for tracking spending, budgets, and financial goals. No ads, no data selling, fully open source.',
+      'AI-driven mobile app (Final Year Project) that dynamically generates personalized rehabilitation plans based on patient data. Features real-time progress tracking, feedback analysis, and therapist collaboration. Integrated ML algorithms (Decision Trees, Random Forest) to adapt recovery routines based on pain levels and medical history.',
     image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['Next.js', 'Prisma', 'Tailwind', 'Supabase'],
+    tags: ['Flutter', 'Firebase', 'Python', 'Decision Trees', 'Random Forest', 'ML'],
     liveUrl: '#',
     repoUrl: '#',
     featured: true,
-    stars: 287,
   },
   {
-    title: 'Codeflow — Developer CLI Tool',
+    title: 'Kalakshetra 6.0 Event Management System',
     description:
-      'A powerful CLI that automates repetitive developer workflows — PR creation, changelog generation, and deployment checks from the terminal.',
+      'Full-stack web application to manage participant registration, ticketing, and merchandise for a large-scale cultural event. Integrated Stripe payment gateway for secure transactions, implemented authentication and file uploads with a responsive UI.',
     image: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['Node.js', 'TypeScript', 'GitHub API', 'Inquirer'],
-    liveUrl: '#',
-    repoUrl: '#',
-    featured: false,
-    stars: 156,
-  },
-  {
-    title: 'Luminara — E-Commerce Storefront',
-    description:
-      'A premium e-commerce experience with blazing-fast SSR, headless CMS, and a seamless checkout flow. 98+ Lighthouse score.',
-    image: 'https://images.pexels.com/photos/5632399/pexels-photo-5632399.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['Next.js', 'Shopify API', 'Stripe', 'Sanity'],
+    tags: ['Node.js', 'Express.js', 'PostgreSQL', 'Bootstrap', 'Stripe API', 'Vercel'],
     liveUrl: '#',
     repoUrl: '#',
     featured: false,
   },
   {
-    title: 'Pulse — Analytics Dashboard',
+    title: 'IoT Weather Monitoring Station',
     description:
-      'Real-time analytics dashboard with customizable widgets, data visualization, and export capabilities for SaaS businesses.',
+      'IoT-based system to collect and transmit real-time weather data using MQTT protocol. Deployed secure cloud infrastructure on GCP with TLS, IAM roles, and VPC firewall. Stored data in MongoDB for real-time access and BigQuery for long-term analysis, with interactive dashboards built in Looker Studio.',
     image: 'https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['React', 'D3.js', 'FastAPI', 'TimescaleDB'],
-    liveUrl: '#',
-    repoUrl: '#',
-    featured: false,
-  },
-  {
-    title: 'Nomad — Travel Planning App',
-    description:
-      'Collaborative trip planning with itinerary builder, map integration, budget tracking, and packing lists. Used by 2k+ travelers.',
-    image: 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['React Native', 'Expo', 'MapBox', 'Node.js'],
+    tags: ['GCP', 'MQTT', 'MongoDB', 'BigQuery', 'Looker Studio', 'IoT'],
     liveUrl: '#',
     repoUrl: '#',
     featured: false,
@@ -90,12 +66,6 @@ function ProjectCard({ project }: { project: Project }) {
         {project.featured && (
           <span className="absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full bg-sky-500/90 text-white">
             Featured
-          </span>
-        )}
-        {project.stars && (
-          <span className="absolute top-3 right-3 flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full bg-neutral-900/80 text-yellow-400 border border-neutral-700/50">
-            <Star size={11} fill="currentColor" />
-            {project.stars}
           </span>
         )}
       </div>
@@ -148,11 +118,11 @@ export default function Projects() {
             Selected Work
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto">
-            A curated collection of projects that reflect my approach to solving real problems with clean, thoughtful code.
+            A curated collection of projects that reflect my approach to solving real problems with AI, machine learning, and full-stack engineering.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {projects.map((project) => (
             <ProjectCard key={project.title} project={project} />
           ))}

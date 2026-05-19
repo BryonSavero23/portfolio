@@ -1,7 +1,7 @@
 import { ArrowDown, Github, Linkedin, Twitter, Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const roles = ['Full-Stack Developer', 'AI Engineer', 'Open Source Contributor', 'Problem Solver'];
+const roles = ['AI Solutions Engineer', 'ML Engineer', 'Full-Stack Developer', 'Problem Solver'];
 
 export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
@@ -75,9 +75,9 @@ export default function Hero() {
         </div>
 
         <p className="max-w-2xl text-neutral-400 text-lg leading-relaxed mb-10">
-          I build exceptional digital experiences — from polished, performant frontends
-          to robust, scalable backends. Passionate about clean code, great design, and
-          turning complex problems into elegant solutions.
+          I build AI-powered solutions — from intelligent LLM systems and computer vision
+          pipelines to full-stack web applications. Passionate about bridging real-world
+          problems with intelligent automation and scalable AI.
         </p>
 
         <div className="flex flex-wrap items-center gap-4 mb-16">
@@ -89,7 +89,8 @@ export default function Hero() {
             <ArrowDown size={16} className="rotate-[-90deg]" />
           </a>
           <a
-            href="#"
+            href="/cv.pdf"
+            download="Bryon_Savero_Resume.pdf"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-medium border border-neutral-700 hover:border-neutral-600 transition-all duration-200 hover:-translate-y-0.5"
           >
             <Download size={16} />
@@ -101,8 +102,8 @@ export default function Hero() {
           <span className="text-xs text-neutral-600 uppercase tracking-widest">Find me on</span>
           <div className="flex items-center gap-4">
             {[
-              { icon: Github, label: 'GitHub', href: '#' },
-              { icon: Linkedin, label: 'LinkedIn', href: '#' },
+              { icon: Github, label: 'GitHub', href: 'https://github.com/BryonSavero23' },
+              { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/bryon-savero-64871328a/' },
               { icon: Twitter, label: 'Twitter', href: '#' },
             ].map(({ icon: Icon, label, href }) => (
               <a

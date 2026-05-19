@@ -9,8 +9,8 @@ const links = {
     { label: 'Contact', href: '#contact' },
   ],
   social: [
-    { icon: Github, label: 'GitHub', href: '#' },
-    { icon: Linkedin, label: 'LinkedIn', href: '#' },
+    { icon: Github, label: 'GitHub', href: 'https://github.com/BryonSavero23' },
+    { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/bryon-savero-64871328a/' },
     { icon: Twitter, label: 'Twitter', href: '#' },
   ],
 };
