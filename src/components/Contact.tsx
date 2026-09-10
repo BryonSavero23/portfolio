@@ -1,11 +1,13 @@
 import { useState, FormEvent } from 'react';
 import { Mail, MessageSquare, Send, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, type ContactMessageInput } from '../lib/supabase';
 
 type Status = 'idle' | 'sending' | 'success' | 'error';
 
+const EMPTY_FORM: ContactMessageInput = { name: '', email: '', subject: '', message: '' };
+
 export default function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [form, setForm] = useState<ContactMessageInput>(EMPTY_FORM);
   const [status, setStatus] = useState<Status>('idle');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -16,18 +18,21 @@ export default function Contact() {
     e.preventDefault();
     setStatus('sending');
 
-    const { error } = await supabase.from('contact_messages').insert([{
-      name: form.name,
-      email: form.email,
-      subject: form.subject,
-      message: form.message,
-    }]);
+    const payload: ContactMessageInput = {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      subject: form.subject.trim(),
+      message: form.message.trim(),
+    };
+
+    const { error } = await supabase.from('contact_messages').insert([payload]);
 
     if (error) {
+      console.error('Failed to submit contact message:', error.message);
       setStatus('error');
     } else {
       setStatus('success');
-      setForm({ name: '', email: '', subject: '', message: '' });
+      setForm(EMPTY_FORM);
     }
   };
 

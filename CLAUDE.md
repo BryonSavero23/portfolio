@@ -16,7 +16,20 @@ No test suite is configured.
 
 ## Architecture
 
-Single-page portfolio site. `App.tsx` composes all sections in order: `Navbar → Hero → About → Skills → Projects → Experience → Testimonials → Contact → Footer`. All routing is anchor-based (`#section-id`); there is no React Router.
+`App.tsx` is a `BrowserRouter` with two routes; anything unmatched redirects to `/`.
+
+| Route | Page | Notes |
+| --- | --- | --- |
+| `/` | `pages/Portfolio.tsx` | The public site |
+| `/admin` | `pages/Admin.tsx` | Private message portal |
+
+`pages/Portfolio.tsx` composes all sections in order: `Navbar → Hero → About → Skills → Projects → Experience → Testimonials → Contact → Footer`. Navigation *within* the portfolio is anchor-based (`#section-id`) — React Router only distinguishes the portfolio from the admin portal.
+
+Because `/admin` is a client-side route, static hosts need an SPA fallback so a hard refresh does not 404. `public/_redirects` covers Netlify; other hosts need their own rewrite rule (e.g. `vercel.json`).
+
+**Admin portal (`/admin`):**
+- `pages/Admin.tsx` resolves the Supabase session, then renders either `components/admin/AdminLogin.tsx` or `components/admin/AdminDashboard.tsx`. It subscribes to `onAuthStateChange`, so sign-in and sign-out swap the view without a reload.
+- The client-side gate is UX only. The actual protection is RLS — see below.
 
 **Styling conventions:**
 - Tailwind CSS only — no CSS modules or styled-components
@@ -27,11 +40,17 @@ Single-page portfolio site. `App.tsx` composes all sections in order: `Navbar �
 **Icons:** Use `lucide-react` exclusively — no other icon libraries.
 
 **Backend — Supabase:**
-- Client is initialized in `src/lib/supabase.ts` from `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars.
-- The only database table is `contact_messages` (see migration in `supabase/migrations/`). RLS allows anon INSERT only; no public reads.
-- The `Contact` component is the sole consumer of the Supabase client.
+- Client is initialized in `src/lib/supabase.ts` from `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars, which also exports the `ContactMessage` / `ContactMessageInput` types. It throws on startup if either env var is missing.
+- The only database table is `contact_messages` (see migrations in `supabase/migrations/`). Columns: `id`, `name`, `email`, `subject`, `message`, `is_read`, `created_at`.
+- RLS: anon may INSERT (public form). SELECT / UPDATE / DELETE are restricted to the admin identified by `public.is_portfolio_admin()`, which matches the JWT email claim against one allow-listed address. **Being merely authenticated is not enough**, so enabling public sign-ups cannot leak message contents. To change admin, edit that function.
+- Consumers: `Contact` (insert) and `components/admin/*` (read, update `is_read`, delete, auth).
 
-**Environment variables needed for local dev:**
+**Admin setup (one-time, in the Supabase dashboard):**
+1. Apply the migrations in `supabase/migrations/`.
+2. Create the admin user under Authentication → Users, using the same email allow-listed in `is_portfolio_admin()`.
+3. Keep Authentication → Providers → Email → "Confirm email" consistent with how you created the user, or sign-in will fail on an unconfirmed address.
+
+**Environment variables needed for local dev** (copy `.env.example` to `.env`):
 ```
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
