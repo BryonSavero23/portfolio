@@ -1,0 +1,2 @@
+# SPA fallback: let client-side routing handle /admin on hard navigation.
+/*  /index.html  200
