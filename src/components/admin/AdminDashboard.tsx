@@ -1,16 +1,40 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Session } from '@supabase/supabase-js';
+import type { RealtimePostgresChangesPayload, Session } from '@supabase/supabase-js';
 import { AlertCircle, Inbox, LogOut, RefreshCw } from 'lucide-react';
 import { supabase, type ContactMessage } from '../../lib/supabase';
 import MessageCard from './MessageCard';
 
 type Props = { session: Session };
 
+type RealtimeStatus = 'connecting' | 'live' | 'offline';
+
+const byNewestFirst = (a: ContactMessage, b: ContactMessage) =>
+  b.created_at.localeCompare(a.created_at);
+
+const REALTIME_LABEL: Record<RealtimeStatus, string> = {
+  connecting: 'Connecting',
+  live: 'Live',
+  offline: 'Offline',
+};
+
+const REALTIME_DOT: Record<RealtimeStatus, string> = {
+  connecting: 'bg-amber-400',
+  live: 'bg-emerald-400 animate-pulse',
+  offline: 'bg-neutral-600',
+};
+
+const REALTIME_HINT: Record<RealtimeStatus, string> = {
+  connecting: 'Connecting to Realtime…',
+  live: 'New messages appear automatically',
+  offline: 'Realtime is not connected — use Refresh to load new messages',
+};
+
 export default function AdminDashboard({ session }: Props) {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [realtimeStatus, setRealtimeStatus] = useState<RealtimeStatus>('connecting');
 
   const loadMessages = useCallback(async () => {
     setLoading(true);
@@ -31,6 +55,58 @@ export default function AdminDashboard({ session }: Props) {
   useEffect(() => {
     void loadMessages();
   }, [loadMessages]);
+
+  /**
+   * Apply a Realtime change to local state.
+   *
+   * Realtime respects RLS for INSERT and UPDATE, so only rows this admin is
+   * allowed to SELECT are delivered. Events are merged into the existing list
+   * rather than triggering a refetch, so the list does not flicker.
+   */
+  const applyRealtimeChange = useCallback(
+    (payload: RealtimePostgresChangesPayload<ContactMessage>) => {
+      setMessages((prev) => {
+        switch (payload.eventType) {
+          case 'INSERT': {
+            const incoming = payload.new;
+            // Guard against a race with the initial fetch delivering the same row.
+            if (prev.some((m) => m.id === incoming.id)) return prev;
+            return [incoming, ...prev].sort(byNewestFirst);
+          }
+          case 'UPDATE': {
+            const updated = payload.new;
+            return prev.map((m) => (m.id === updated.id ? { ...m, ...updated } : m));
+          }
+          case 'DELETE': {
+            const removedId = payload.old.id;
+            return removedId ? prev.filter((m) => m.id !== removedId) : prev;
+          }
+          default:
+            return prev;
+        }
+      });
+    },
+    []
+  );
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-contact-messages')
+      .on<ContactMessage>(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'contact_messages' },
+        applyRealtimeChange
+      )
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') setRealtimeStatus('live');
+        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setRealtimeStatus('offline');
+        else if (status === 'CLOSED') setRealtimeStatus('offline');
+      });
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [applyRealtimeChange]);
 
   const unreadCount = useMemo(
     () => messages.filter((m) => !m.is_read).length,
@@ -124,6 +200,14 @@ export default function AdminDashboard({ session }: Props) {
           <span className="w-px h-4 bg-neutral-800" />
           <span className="text-neutral-400">
             <span className="text-sky-400 font-semibold">{unreadCount}</span> unread
+          </span>
+          <span className="w-px h-4 bg-neutral-800" />
+          <span
+            className="flex items-center gap-1.5 text-xs text-neutral-500"
+            title={REALTIME_HINT[realtimeStatus]}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${REALTIME_DOT[realtimeStatus]}`} />
+            {REALTIME_LABEL[realtimeStatus]}
           </span>
         </div>
 

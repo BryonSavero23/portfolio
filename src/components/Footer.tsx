@@ -1,4 +1,4 @@
-import { Github, Linkedin, Twitter, Code2, Heart } from 'lucide-react';
+import { Github, Linkedin, Mail, Code2, Heart } from 'lucide-react';
 
 const links = {
   nav: [
@@ -11,7 +11,7 @@ const links = {
   social: [
     { icon: Github, label: 'GitHub', href: 'https://github.com/BryonSavero23' },
     { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/bryon-savero-64871328a/' },
-    { icon: Twitter, label: 'Twitter', href: '#' },
+    { icon: Mail, label: 'Email', href: 'mailto:bryonsavero.work@gmail.com' },
   ],
 };
 
