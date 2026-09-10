@@ -25,7 +25,14 @@ No test suite is configured.
 
 `pages/Portfolio.tsx` composes all sections in order: `Navbar → Hero → About → Skills → Projects → Experience → Testimonials → Contact → Footer`. Navigation *within* the portfolio is anchor-based (`#section-id`) — React Router only distinguishes the portfolio from the admin portal.
 
-Because `/admin` is a client-side route, static hosts need an SPA fallback so a hard refresh does not 404. `public/_redirects` covers Netlify; other hosts need their own rewrite rule (e.g. `vercel.json`).
+Because `/admin` is a client-side route, static hosts need an SPA fallback so a hard refresh does not 404. Two configs are committed, and each host ignores the other's file:
+
+| Host | File |
+| --- | --- |
+| Netlify | `public/_redirects` |
+| Vercel | `vercel.json` |
+
+Both are catch-all rewrites to `/index.html`. This does not shadow the hashed bundles in `/assets`, because both hosts resolve real files before applying rewrites. Other hosts (Cloudflare Pages, GitHub Pages, S3/CloudFront) need their own equivalent.
 
 **Admin portal (`/admin`):**
 - `pages/Admin.tsx` resolves the Supabase session, then renders either `components/admin/AdminLogin.tsx` or `components/admin/AdminDashboard.tsx`. It subscribes to `onAuthStateChange`, so sign-in and sign-out swap the view without a reload.
