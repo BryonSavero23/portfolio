@@ -1,7 +1,7 @@
-import { ArrowDown, Github, Linkedin, Twitter, Download } from 'lucide-react';
+import { ArrowDown, Github, Linkedin, Mail, Download } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const roles = ['AI Solutions Engineer', 'ML Engineer', 'Full-Stack Developer', 'Problem Solver'];
+const roles = ['AI Solutions Engineer', 'Agentic AI Full-Stack Developer'];
 
 export default function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
@@ -67,7 +67,9 @@ export default function Hero() {
           <span className="text-gradient">Bryon Savero</span>
         </h1>
 
-        <div className="h-10 mb-6">
+        {/* min-height rather than a fixed height: the longer role wraps on
+            narrow viewports and a fixed h-10 would clip the second line. */}
+        <div className="min-h-[2.5rem] mb-6">
           <p className="text-xl md:text-2xl text-neutral-300 font-light">
             <span>{displayed}</span>
             <span className="inline-block w-0.5 h-6 bg-sky-400 ml-0.5 animate-pulse align-middle" />
@@ -104,7 +106,7 @@ export default function Hero() {
             {[
               { icon: Github, label: 'GitHub', href: 'https://github.com/BryonSavero23' },
               { icon: Linkedin, label: 'LinkedIn', href: 'https://www.linkedin.com/in/bryon-savero-64871328a/' },
-              { icon: Twitter, label: 'Twitter', href: '#' },
+              { icon: Mail, label: 'Email', href: 'mailto:bryonsavero.work@gmail.com' },
             ].map(({ icon: Icon, label, href }) => (
               <a
                 key={label}

@@ -37,6 +37,8 @@ Both are catch-all rewrites to `/index.html`. This does not shadow the hashed bu
 **Admin portal (`/admin`):**
 - `pages/Admin.tsx` resolves the Supabase session, then renders either `components/admin/AdminLogin.tsx` or `components/admin/AdminDashboard.tsx`. It subscribes to `onAuthStateChange`, so sign-in and sign-out swap the view without a reload.
 - The client-side gate is UX only. The actual protection is RLS — see below.
+- `AdminDashboard` owns the message list, including the Realtime subscription. It lives here rather than in `Admin.tsx` because that is where the `messages` state is; putting it a level up would mean lifting state for no benefit.
+- Realtime merges `postgres_changes` events into local state instead of refetching, so the list does not flicker. INSERT prepends (guarded against duplicating a row the initial fetch already returned), UPDATE patches in place, DELETE removes by id. `contact_messages` must be in the `supabase_realtime` publication or the channel reports `SUBSCRIBED` and silently delivers nothing — hence the migration. The header shows a Live/Connecting/Offline dot, and Refresh remains as a manual fallback.
 
 **Styling conventions:**
 - Tailwind CSS only — no CSS modules or styled-components

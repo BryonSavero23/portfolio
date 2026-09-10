@@ -130,7 +130,7 @@ export default function Projects() {
 
         <div className="text-center mt-12">
           <a
-            href="#"
+            href="https://github.com/BryonSavero23"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-medium border border-neutral-700 hover:border-neutral-600 transition-all duration-200"
           >
             <Github size={16} />
