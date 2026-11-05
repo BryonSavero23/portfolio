@@ -1,114 +1,289 @@
-import { ExternalLink, Github } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Code2, ExternalLink, Github } from 'lucide-react';
 
-type Project = {
-  title: string;
-  description: string;
-  image: string;
-  tags: string[];
-  liveUrl: string;
-  repoUrl: string;
-  featured: boolean;
+type Repository = {
+  id: number;
+  name: string;
+  description: string | null;
+  language: string | null;
+  topics: string[];
+  url: string;
+  homepage: string | null;
+  updatedAt: string;
 };
 
-const projects: Project[] = [
-  {
-    title: 'AI Knowledge Bot System',
-    description:
-      'Designed and configured an AI-powered knowledge assistant for educational use cases. Implemented structured system prompts for consistent, accurate responses and integrated document-based knowledge sources to enable contextual Q&A. Tuned LLM responses via prompt engineering and parameter adjustments.',
-    image: 'https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['OpenAI API', 'Prompt Engineering', 'LLM', 'RAG', 'Learningflow.AI'],
-    liveUrl: '#',
-    repoUrl: '#',
-    featured: true,
-  },
-  {
-    title: 'Personalized Rehabilitation Plans',
-    description:
-      'AI-driven mobile app (Final Year Project) that dynamically generates personalized rehabilitation plans based on patient data. Features real-time progress tracking, feedback analysis, and therapist collaboration. Integrated ML algorithms (Decision Trees, Random Forest) to adapt recovery routines based on pain levels and medical history.',
-    image: 'https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['Flutter', 'Firebase', 'Python', 'Decision Trees', 'Random Forest', 'ML'],
-    liveUrl: '#',
-    repoUrl: '#',
-    featured: true,
-  },
-  {
-    title: 'Kalakshetra 6.0 Event Management System',
-    description:
-      'Full-stack web application to manage participant registration, ticketing, and merchandise for a large-scale cultural event. Integrated Stripe payment gateway for secure transactions, implemented authentication and file uploads with a responsive UI.',
-    image: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['Node.js', 'Express.js', 'PostgreSQL', 'Bootstrap', 'Stripe API', 'Vercel'],
-    liveUrl: '#',
-    repoUrl: '#',
-    featured: false,
-  },
-  {
-    title: 'IoT Weather Monitoring Station',
-    description:
-      'IoT-based system to collect and transmit real-time weather data using MQTT protocol. Deployed secure cloud infrastructure on GCP with TLS, IAM roles, and VPC firewall. Stored data in MongoDB for real-time access and BigQuery for long-term analysis, with interactive dashboards built in Looker Studio.',
-    image: 'https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&w=800',
-    tags: ['GCP', 'MQTT', 'MongoDB', 'BigQuery', 'Looker Studio', 'IoT'],
-    liveUrl: '#',
-    repoUrl: '#',
-    featured: false,
-  },
-];
+type RepositoryLoadError = 'rate-limit' | 'api';
 
-function ProjectCard({ project }: { project: Project }) {
+const GITHUB_USERNAME = 'BryonSavero23';
+const GITHUB_REPOSITORIES_API = `https://api.github.com/users/${GITHUB_USERNAME}/repos`;
+const GITHUB_PROFILE_URL = `https://github.com/${GITHUB_USERNAME}?tab=repositories`;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function getRepositoryUrl(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+
+  try {
+    const url = new URL(value);
+    const path = url.pathname.split('/').filter(Boolean);
+    return url.origin === 'https://github.com' &&
+      path.length === 2 &&
+      path[0].toLowerCase() === GITHUB_USERNAME.toLowerCase()
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function getHomepageUrl(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length === 0) return null;
+
+  try {
+    const url = new URL(value);
+    return (url.protocol === 'https:' || url.protocol === 'http:') &&
+      url.hostname.length > 0 &&
+      !url.username &&
+      !url.password
+      ? url.href
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function parseRepository(value: unknown): Repository | null {
+  if (!isRecord(value)) return null;
+
+  const url = getRepositoryUrl(value.html_url);
+  if (
+    typeof value.id !== 'number' ||
+    typeof value.name !== 'string' ||
+    typeof value.updated_at !== 'string' ||
+    !Number.isFinite(Date.parse(value.updated_at)) ||
+    typeof value.fork !== 'boolean' ||
+    typeof value.archived !== 'boolean' ||
+    value.fork ||
+    value.archived ||
+    !url
+  ) {
+    return null;
+  }
+
+  return {
+    id: value.id,
+    name: value.name,
+    description: typeof value.description === 'string' ? value.description : null,
+    language: typeof value.language === 'string' ? value.language : null,
+    topics: Array.isArray(value.topics)
+      ? value.topics.filter((topic): topic is string => typeof topic === 'string')
+      : [],
+    url,
+    homepage: getHomepageUrl(value.homepage),
+    updatedAt: value.updated_at,
+  };
+}
+
+async function loadRepositories(): Promise<Repository[]> {
+  const repositories: Repository[] = [];
+
+  for (let page = 1; ; page += 1) {
+    const response = await fetch(
+      `${GITHUB_REPOSITORIES_API}?per_page=100&page=${page}&sort=updated&type=owner`,
+      { headers: { Accept: 'application/vnd.github+json' } },
+    );
+
+    if (!response.ok) {
+      const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+      const retryAfter = response.headers.get('retry-after');
+      if (
+        response.status === 429 ||
+        (response.status === 403 && (rateLimitRemaining === '0' || retryAfter !== null))
+      ) {
+        throw new Error('rate-limit');
+      }
+      throw new Error('api');
+    }
+
+    const data: unknown = await response.json();
+    if (!Array.isArray(data)) throw new Error('api');
+
+    const pageRepositories = data
+      .map(parseRepository)
+      .filter((repository): repository is Repository => repository !== null);
+    repositories.push(...pageRepositories);
+
+    if (data.length < 100) break;
+  }
+
+  return repositories.sort(
+    (first, second) => Date.parse(second.updatedAt) - Date.parse(first.updatedAt),
+  );
+}
+
+function ProjectCard({ repository }: { repository: Repository }) {
   return (
-    <div className="group bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden hover:border-neutral-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/40 flex flex-col">
-      <div className="relative aspect-video overflow-hidden">
-        <img
-          src={project.image}
-          alt={project.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/80 via-transparent to-transparent" />
-        {project.featured && (
-          <span className="absolute top-3 left-3 text-xs font-medium px-2.5 py-1 rounded-full bg-sky-500/90 text-white">
-            Featured
-          </span>
-        )}
+    <article className="group bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden hover:border-neutral-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/40 flex flex-col">
+      <div className="flex items-center justify-between p-5 pb-0">
+        <div className="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center">
+          <Code2 size={20} aria-hidden="true" />
+        </div>
+        <a
+          href={repository.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`View ${repository.name} source on GitHub`}
+          className="text-neutral-500 hover:text-white transition-colors"
+        >
+          <Github size={18} aria-hidden="true" />
+        </a>
       </div>
 
       <div className="p-5 flex flex-col flex-1">
-        <h3 className="font-semibold text-white mb-2 leading-snug">{project.title}</h3>
-        <p className="text-sm text-neutral-400 leading-relaxed mb-4 flex-1">
-          {project.description}
-        </p>
+        <h3 className="font-semibold text-white mb-2 leading-snug">
+          <a
+            href={repository.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-sky-300 transition-colors"
+          >
+            {repository.name}
+          </a>
+        </h3>
+        {repository.description && (
+          <p className="text-sm text-neutral-400 leading-relaxed mb-4 flex-1">
+            {repository.description}
+          </p>
+        )}
 
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {project.tags.map((tag) => (
-            <span
-              key={tag}
-              className="text-xs px-2 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700/50"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        {(repository.language || repository.topics.length > 0) && (
+          <div className="flex flex-wrap gap-1.5 mb-4">
+            {repository.language && (
+              <span className="text-xs px-2 py-0.5 rounded bg-neutral-800 text-neutral-300 border border-neutral-700/50">
+                {repository.language}
+              </span>
+            )}
+            {repository.topics.map((topic) => (
+              <span
+                key={topic}
+                className="text-xs px-2 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700/50"
+              >
+                {topic}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="flex items-center gap-3 pt-3 border-t border-neutral-800">
+          {repository.homepage && (
+            <a
+              href={repository.homepage}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs font-medium text-sky-400 hover:text-sky-300 transition-colors"
+            >
+              <ExternalLink size={13} aria-hidden="true" />
+              Live Demo
+            </a>
+          )}
           <a
-            href={project.liveUrl}
-            className="flex items-center gap-1.5 text-xs font-medium text-sky-400 hover:text-sky-300 transition-colors"
-          >
-            <ExternalLink size={13} />
-            Live Demo
-          </a>
-          <a
-            href={project.repoUrl}
+            href={repository.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`View ${repository.name} source on GitHub`}
             className="flex items-center gap-1.5 text-xs font-medium text-neutral-400 hover:text-white transition-colors"
           >
-            <Github size={13} />
+            <Github size={13} aria-hidden="true" />
             Source
           </a>
         </div>
       </div>
-    </div>
+    </article>
+  );
+}
+
+function RepositoryStatus({
+  loading,
+  error,
+  onRetry,
+}: {
+  loading: boolean;
+  error: RepositoryLoadError | null;
+  onRetry: () => void;
+}) {
+  if (loading) {
+    return (
+      <p className="text-center text-neutral-400 py-10" role="status" aria-live="polite">
+        Loading public GitHub repositories…
+      </p>
+    );
+  }
+
+  if (error) {
+    const message =
+      error === 'rate-limit'
+        ? 'GitHub’s public API rate limit has been reached. Please try again later.'
+        : 'Repositories could not be loaded from GitHub right now.';
+
+    return (
+      <div className="text-center text-neutral-400 py-10" role="alert">
+        <p>{message} You can still visit the GitHub profile below.</p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-4 text-sm font-medium text-sky-400 hover:text-sky-300 transition-colors"
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <p className="text-center text-neutral-400 py-10" role="status">
+      No public, non-fork, non-archived repositories were found.
+    </p>
   );
 }
 
 export default function Projects() {
+  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<RepositoryLoadError | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+
+    async function fetchRepositories() {
+      setLoading(true);
+      setError(null);
+      setRepositories([]);
+      try {
+        const allRepositories = await loadRepositories();
+        if (active) {
+          setRepositories(allRepositories);
+        }
+      } catch (loadError) {
+        if (active) {
+          setError(loadError instanceof Error && loadError.message === 'rate-limit' ? 'rate-limit' : 'api');
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    void fetchRepositories();
+    return () => {
+      active = false;
+    };
+  }, [retryCount]);
+
+  const retry = () => setRetryCount((count) => count + 1);
+  const hasRepositories = repositories.length > 0;
+
   return (
     <section id="projects" className="py-28 section-padding">
       <div className="max-w-7xl mx-auto">
@@ -118,22 +293,30 @@ export default function Projects() {
             Selected Work
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto">
-            A curated collection of projects that reflect my approach to solving real problems with AI, machine learning, and full-stack engineering.
+            Public repositories from my GitHub profile, sorted by recent activity.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
-          {projects.map((project) => (
-            <ProjectCard key={project.title} project={project} />
-          ))}
-        </div>
+        {hasRepositories && !loading && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-6">
+            {repositories.map((repository) => (
+              <ProjectCard key={repository.id} repository={repository} />
+            ))}
+          </div>
+        )}
+
+        {(!hasRepositories || loading) && (
+          <RepositoryStatus loading={loading} error={error} onRetry={retry} />
+        )}
 
         <div className="text-center mt-12">
           <a
-            href="https://github.com/BryonSavero23"
+            href={GITHUB_PROFILE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-medium border border-neutral-700 hover:border-neutral-600 transition-all duration-200"
           >
-            <Github size={16} />
+            <Github size={16} aria-hidden="true" />
             View All Projects on GitHub
           </a>
         </div>
