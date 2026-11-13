@@ -11,8 +11,14 @@ import Footer from '../components/Footer';
 export default function Portfolio() {
   return (
     <div className="min-h-screen bg-neutral-950">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[60] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-sky-500 focus:text-neutral-950 focus:font-medium"
+      >
+        Skip to content
+      </a>
       <Navbar />
-      <main>
+      <main id="main" tabIndex={-1} className="focus:outline-none">
         <Hero />
         <About />
         <Skills />

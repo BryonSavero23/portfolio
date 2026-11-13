@@ -39,53 +39,45 @@ const timeline: Entry[] = [
   },
 ];
 
-function TimelineItem({ entry, index }: { entry: Entry; index: number }) {
-  const isLeft = index % 2 === 0;
+function TimelineItem({ entry }: { entry: Entry }) {
   const Icon = entry.type === 'work' ? Briefcase : GraduationCap;
 
   return (
-    <div className={`relative flex items-start gap-8 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}>
-      {/* Card */}
-      <div className="flex-1 md:max-w-[calc(50%-2rem)]">
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 hover:border-neutral-700 transition-colors">
-          <div className="flex items-start justify-between mb-3">
-            <div>
-              <h3 className="font-semibold text-white">{entry.title}</h3>
-              <p className="text-sky-400 text-sm mt-0.5">{entry.org}</p>
-            </div>
-            <span className="text-xs text-neutral-500 whitespace-nowrap ml-4 mt-0.5">{entry.period}</span>
+    <li className="relative flex gap-4 md:gap-6">
+      <div className="relative z-10 flex-shrink-0 mt-5 w-9 h-9 md:w-10 md:h-10 rounded-full bg-neutral-900 border-2 border-sky-500/50 flex items-center justify-center">
+        <Icon size={16} className="text-sky-400" aria-hidden="true" />
+      </div>
+
+      <div className="flex-1 min-w-0 bg-neutral-900 border border-neutral-800 rounded-2xl p-5 md:p-6 hover:border-neutral-700 transition-colors">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1 sm:gap-4 mb-3">
+          <div>
+            <h3 className="font-semibold text-white">{entry.title}</h3>
+            <p className="text-sky-400 text-sm mt-0.5">{entry.org}</p>
           </div>
-          <p className="text-sm text-neutral-400 leading-relaxed mb-4">{entry.description}</p>
-          {entry.tags && (
-            <div className="flex flex-wrap gap-1.5">
-              {entry.tags.map((tag) => (
-                <span key={tag} className="text-xs px-2 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700/50">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+          <span className="text-xs text-neutral-400 whitespace-nowrap sm:mt-1">{entry.period}</span>
         </div>
+        <p className="text-sm text-neutral-400 leading-relaxed mb-4">{entry.description}</p>
+        {entry.tags && (
+          <ul className="flex flex-wrap gap-1.5">
+            {entry.tags.map((tag) => (
+              <li key={tag} className="text-xs px-2 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-neutral-700/50">
+                {tag}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-
-      {/* Center icon - desktop */}
-      <div className="hidden md:flex absolute left-1/2 -translate-x-1/2 top-6 w-10 h-10 rounded-full bg-neutral-900 border-2 border-sky-500/50 items-center justify-center z-10 flex-shrink-0">
-        <Icon size={16} className="text-sky-400" />
-      </div>
-
-      {/* Spacer for the other side */}
-      <div className="hidden md:block flex-1" />
-    </div>
+    </li>
   );
 }
 
 export default function Experience() {
   return (
-    <section id="experience" className="py-28 section-padding bg-neutral-900/30">
+    <section id="experience" aria-labelledby="experience-heading" className="py-28 section-padding bg-neutral-900/30">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="text-sky-400 text-sm font-medium uppercase tracking-widest mb-4">Journey</p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 id="experience-heading" className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
             Experience & Education
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto">
@@ -93,40 +85,15 @@ export default function Experience() {
           </p>
         </div>
 
-        {/* Mobile: simple list */}
-        <div className="md:hidden space-y-6">
-          {timeline.map((entry) => {
-            const Icon = entry.type === 'work' ? Briefcase : GraduationCap;
-            return (
-              <div key={entry.title} className="flex gap-4">
-                <div className="flex-shrink-0 mt-1 w-8 h-8 rounded-full bg-neutral-900 border border-sky-500/50 flex items-center justify-center">
-                  <Icon size={14} className="text-sky-400" />
-                </div>
-                <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 flex-1">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="font-semibold text-white text-sm">{entry.title}</h3>
-                      <p className="text-sky-400 text-xs mt-0.5">{entry.org}</p>
-                    </div>
-                    <span className="text-xs text-neutral-500 ml-3">{entry.period}</span>
-                  </div>
-                  <p className="text-xs text-neutral-400 leading-relaxed">{entry.description}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Desktop: timeline */}
-        <div className="hidden md:block relative">
-          {/* Center line */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-px bg-neutral-800" />
-
-          <div className="space-y-10">
-            {timeline.map((entry, i) => (
-              <TimelineItem key={entry.title} entry={entry} index={i} />
+        {/* Single left-aligned timeline at every width: one DOM tree, full-width
+            cards, and a readable line length on desktop. */}
+        <div className="relative max-w-3xl mx-auto">
+          <div className="absolute left-[17px] md:left-[19px] top-5 bottom-5 w-px bg-neutral-800" aria-hidden="true" />
+          <ol className="space-y-6 md:space-y-8">
+            {timeline.map((entry) => (
+              <TimelineItem key={entry.title} entry={entry} />
             ))}
-          </div>
+          </ol>
         </div>
       </div>
     </section>

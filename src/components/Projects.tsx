@@ -135,13 +135,13 @@ function ProjectCard({ repository }: { repository: Repository }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`View ${repository.name} source on GitHub`}
-          className="text-neutral-500 hover:text-white transition-colors"
+          className="-m-3 w-11 h-11 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white transition-colors"
         >
           <Github size={18} aria-hidden="true" />
         </a>
       </div>
 
-      <div className="p-5 flex flex-col flex-1">
+      <div className="p-5 pb-2 flex flex-col flex-1">
         <h3 className="font-semibold text-white mb-2 leading-snug">
           <a
             href={repository.url}
@@ -176,13 +176,13 @@ function ProjectCard({ repository }: { repository: Repository }) {
           </div>
         )}
 
-        <div className="flex items-center gap-3 pt-3 border-t border-neutral-800">
+        <div className="flex items-center gap-5 pt-1 border-t border-neutral-800">
           {repository.homepage && (
             <a
               href={repository.homepage}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-xs font-medium text-sky-400 hover:text-sky-300 transition-colors"
+              className="flex items-center gap-1.5 min-h-11 text-xs font-medium text-sky-400 hover:text-sky-300 transition-colors"
             >
               <ExternalLink size={13} aria-hidden="true" />
               Live Demo
@@ -193,7 +193,7 @@ function ProjectCard({ repository }: { repository: Repository }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`View ${repository.name} source on GitHub`}
-            className="flex items-center gap-1.5 text-xs font-medium text-neutral-400 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 min-h-11 text-xs font-medium text-neutral-400 hover:text-white transition-colors"
           >
             <Github size={13} aria-hidden="true" />
             Source
@@ -233,7 +233,7 @@ function RepositoryStatus({
         <button
           type="button"
           onClick={onRetry}
-          className="mt-4 text-sm font-medium text-sky-400 hover:text-sky-300 transition-colors"
+          className="mt-2 min-h-11 px-3 text-sm font-medium text-sky-400 hover:text-sky-300 transition-colors"
         >
           Try again
         </button>
@@ -285,11 +285,11 @@ export default function Projects() {
   const hasRepositories = repositories.length > 0;
 
   return (
-    <section id="projects" className="py-28 section-padding">
+    <section id="projects" aria-labelledby="projects-heading" className="py-28 section-padding">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="text-sky-400 text-sm font-medium uppercase tracking-widest mb-4">Portfolio</p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 id="projects-heading" className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
             Selected Work
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto">

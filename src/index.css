@@ -12,6 +12,11 @@
     @apply bg-neutral-950 text-neutral-100 antialiased;
   }
 
+  /* One visible focus style everywhere, tuned for the dark background. */
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-sky-400;
+  }
+
   ::selection {
     @apply bg-sky-500/30 text-sky-100;
   }
@@ -30,6 +35,22 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-neutral-500;
+  }
+}
+
+@layer base {
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 

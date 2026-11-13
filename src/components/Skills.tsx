@@ -36,11 +36,11 @@ const skillCategories: SkillCategory[] = [
 
 export default function Skills() {
   return (
-    <section id="skills" className="py-28 section-padding bg-neutral-900/30">
+    <section id="skills" aria-labelledby="skills-heading" className="py-28 section-padding bg-neutral-900/30">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="text-sky-400 text-sm font-medium uppercase tracking-widest mb-4">Expertise</p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 id="skills-heading" className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
             Skills & Technologies
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto">

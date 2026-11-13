@@ -49,10 +49,12 @@ Both are catch-all rewrites to `/index.html`. This does not shadow the hashed bu
 **Icons:** Use `lucide-react` exclusively — no other icon libraries.
 
 **Backend — Supabase:**
-- Client is initialized in `src/lib/supabase.ts` from `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars, which also exports the `ContactMessage` / `ContactMessageInput` types. It throws on startup if either env var is missing.
+- Client is initialized in `src/lib/supabase.ts` from `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars, which also exports the `ContactMessage` / `ContactMessageInput` types. The module throws when loaded if either env var is missing.
+- The client is kept out of the public bundle: `App.tsx` lazy-loads `pages/Admin.tsx`, and `Contact` imports `lib/supabase` dynamically on submit (type-only import at the top). So a missing env var no longer breaks the public page at startup — it surfaces as the contact form's error state, and as a load failure on `/admin`. Do not add a static `import { supabase }` to anything `Portfolio.tsx` renders.
 - The only database table is `contact_messages` (see migrations in `supabase/migrations/`). Columns: `id`, `name`, `email`, `subject`, `message`, `is_read`, `created_at`.
 - RLS: anon may INSERT (public form). SELECT / UPDATE / DELETE are restricted to the admin identified by `public.is_portfolio_admin()`, which matches the JWT email claim against one allow-listed address. **Being merely authenticated is not enough**, so enabling public sign-ups cannot leak message contents. To change admin, edit that function.
 - Consumers: `Contact` (insert) and `components/admin/*` (read, update `is_read`, delete, auth).
+- The contact form has a honeypot field (`fax`): if it is filled, the form shows success without inserting. `subject` is optional and is stored as `''` when left blank.
 
 **Admin setup (one-time, in the Supabase dashboard):**
 1. Apply the migrations in `supabase/migrations/`.
@@ -66,3 +68,13 @@ VITE_SUPABASE_ANON_KEY=
 ```
 
 A `cv.pdf` file should be placed in the `public/` directory to enable the "Download CV" button in the Hero section.
+
+**Other static assets in `public/`:**
+- `profile.webp` — the portrait. The hero shows it at `lg` and up, About shows it below `lg`, so it never renders twice.
+- `favicon.svg`, `og-image.jpg` (1200×630 share image).
+- `index.html` hard-codes the deployed origin in `canonical`, `og:url`, `og:image` and `twitter:image`, because social crawlers need absolute URLs. Update all four if the domain changes.
+
+**Accessibility conventions:**
+- Primary buttons are `bg-sky-500` with `text-neutral-950` — white on `sky-500` is only 2.77:1.
+- `text-neutral-400` is the dimmest colour used for readable text; `neutral-500`/`600` fail AA on this background.
+- Every `<section>` has `aria-labelledby` pointing at its `h2`. Focus styling comes from the global `:focus-visible` rule in `index.css`, which also holds the `prefers-reduced-motion` overrides.

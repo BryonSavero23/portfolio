@@ -34,11 +34,11 @@ const references: Reference[] = [
 
 export default function Testimonials() {
   return (
-    <section className="py-28 section-padding">
+    <section id="references" aria-labelledby="references-heading" className="py-28 section-padding">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <p className="text-sky-400 text-sm font-medium uppercase tracking-widest mb-4">References</p>
-          <h2 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+          <h2 id="references-heading" className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
             Professional References
           </h2>
           <p className="text-neutral-400 max-w-xl mx-auto">
@@ -59,16 +59,16 @@ export default function Testimonials() {
               />
               <div className="text-base font-semibold text-white mb-0.5">{ref.name}</div>
               <div className="text-sm text-sky-400 mb-1">{ref.title}</div>
-              <div className="text-xs text-neutral-500 mb-4">{ref.org}</div>
+              <div className="text-xs text-neutral-400 mb-4">{ref.org}</div>
               <div className="mt-auto flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400">
-                <UserCheck size={12} />
+                <UserCheck size={12} aria-hidden="true" />
                 {ref.relationship}
               </div>
             </div>
           ))}
         </div>
 
-        <p className="text-center text-xs text-neutral-600 mt-8">
+        <p className="text-center text-xs text-neutral-400 mt-8">
           Full contact details available upon request.
         </p>
       </div>

@@ -23,24 +23,24 @@ export default function Footer() {
           <div className="max-w-xs">
             <div className="flex items-center gap-2 mb-3">
               <span className="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center">
-                <Code2 size={14} className="text-white" />
+                <Code2 size={14} className="text-neutral-950" aria-hidden="true" />
               </span>
               <span className="font-semibold text-white">Bryon Savero Michael Leo</span>
             </div>
-            <p className="text-sm text-neutral-500 leading-relaxed">
+            <p className="text-sm text-neutral-400 leading-relaxed">
               AI Engineer & Full-stack developer based in Malaysia. Building products that people love to use.
             </p>
           </div>
 
           <div className="flex flex-wrap gap-16">
             <div>
-              <h4 className="text-xs text-neutral-500 uppercase tracking-widest mb-4">Navigation</h4>
-              <ul className="space-y-2.5">
+              <h3 className="text-xs text-neutral-400 uppercase tracking-widest mb-2">Navigation</h3>
+              <ul>
                 {links.nav.map((link) => (
                   <li key={link.href}>
                     <a
                       href={link.href}
-                      className="text-sm text-neutral-400 hover:text-white link-underline transition-colors"
+                      className="inline-flex items-center min-h-11 md:min-h-9 text-sm text-neutral-300 hover:text-white transition-colors"
                     >
                       {link.label}
                     </a>
@@ -50,15 +50,15 @@ export default function Footer() {
             </div>
 
             <div>
-              <h4 className="text-xs text-neutral-500 uppercase tracking-widest mb-4">Connect</h4>
-              <div className="flex flex-col gap-2.5">
+              <h3 className="text-xs text-neutral-400 uppercase tracking-widest mb-2">Connect</h3>
+              <div className="flex flex-col">
                 {links.social.map(({ icon: Icon, label, href }) => (
                   <a
                     key={label}
                     href={href}
-                    className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition-colors"
+                    className="flex items-center gap-2 min-h-11 md:min-h-9 text-sm text-neutral-300 hover:text-white transition-colors"
                   >
-                    <Icon size={14} />
+                    <Icon size={14} aria-hidden="true" />
                     {label}
                   </a>
                 ))}
@@ -67,10 +67,11 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-neutral-800/60 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-neutral-600">
+        <div className="pt-6 border-t border-neutral-800/60 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-neutral-400">
           <span>© {new Date().getFullYear()} Bryon Savero. All rights reserved.</span>
           <span className="flex items-center gap-1.5">
-            Built with <Heart size={11} className="text-red-500 fill-red-500" /> using React & Tailwind
+            Built with <Heart size={11} className="text-red-500 fill-red-500" aria-hidden="true" />
+            <span className="sr-only">love</span> using React & Tailwind
           </span>
         </div>
       </div>
